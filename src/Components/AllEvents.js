@@ -1,42 +1,31 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { graphql, compose, withApollo } from "react-apollo";
-import QueryAllEvents from "../GraphQL/QueryAllEvents";
-import MutationDeleteEvent from "../GraphQL/MutationDeleteEvent";
 import Event from "./Event";
 
-const handleSync = async (setBusy, client) => {
-  const query = QueryAllEvents;
+import { StoreContext } from "../StoreContext";
+import { fetchEvents, deleteEvent } from "../actions/events";
 
-  setBusy(true);
+function AllEvents() {
+  let { state, dispatch } = useContext(StoreContext);
 
-  await client.query({
-    query,
-    fetchPolicy: "network-only"
-  });
+  useEffect(() => {
+    fetchEvents(dispatch);
+  }, []);
 
-  setBusy(false);
-};
-
-function AllEvents({ events, deleteEvent, client }) {
-  const [busy, setBusy] = useState(false);
-
+  const {
+    events: { loading, data: events }
+  } = state;
   return (
     <div>
       <div className="ui clearing basic segment">
         <h1 className="ui header left floated">All Events</h1>
         <button
           className="ui icon left basic button"
-          onClick={() => {
-            handleSync(setBusy, client);
-          }}
-          disabled={busy}
+          onClick={() => fetchEvents(dispatch)}
+          disabled={loading}
         >
-          <i
-            aria-hidden="true"
-            className={`refresh icon ${busy && "loading"}`}
-          />
+          <i className={`refresh icon ${loading && "loading"}`} />
           Sync with Server
         </button>
       </div>
@@ -50,49 +39,10 @@ function AllEvents({ events, deleteEvent, client }) {
         {[]
           .concat(events)
           .sort((a, b) => a.when.localeCompare(b.when))
-          .map(event => Event(event, deleteEvent))}
+          .map(event => Event(event, () => deleteEvent(dispatch, event.id)))}
       </div>
     </div>
   );
 }
 
-export default withApollo(
-  compose(
-    graphql(QueryAllEvents, {
-      options: {
-        fetchPolicy: "cache-first"
-      },
-      props: ({ data: { listEvents = { items: [] } } }) => ({
-        events: listEvents.items
-      })
-    }),
-    graphql(MutationDeleteEvent, {
-      options: {
-        update: (proxy, { data: { deleteEvent } }) => {
-          const query = QueryAllEvents;
-          const data = proxy.readQuery({ query });
-
-          data.listEvents.items = data.listEvents.items.filter(
-            event => event.id !== deleteEvent.id
-          );
-
-          proxy.writeQuery({ query, data });
-        }
-      },
-      props: props => ({
-        deleteEvent: event => {
-          return props.mutate({
-            variables: { id: event.id },
-            optimisticResponse: () => ({
-              deleteEvent: {
-                ...event,
-                __typename: "Event",
-                comments: { __typename: "CommentConnection", items: [] }
-              }
-            })
-          });
-        }
-      })
-    })
-  )(AllEvents)
-);
+export default AllEvents;

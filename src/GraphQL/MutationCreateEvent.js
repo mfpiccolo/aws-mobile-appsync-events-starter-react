@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
-
-export default gql(`
+export const createEventQuery = `
 mutation($name: String! $when: String! $where: String! $description: String!) {
   createEvent(
     name: $name
@@ -19,4 +17,4 @@ mutation($name: String! $when: String! $where: String! $description: String!) {
       }
     }
   }
-}`);
+}`;

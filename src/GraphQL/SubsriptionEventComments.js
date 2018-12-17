@@ -1,9 +1,7 @@
-import gql from "graphql-tag";
-
-export default gql(`
+export const subscribeToEventCommentsQuery = `
 subscription($eventId: String!) {
   subscribeToEventComments(eventId: $eventId) {
     eventId
     commentId
   }
-}`);
+}`;

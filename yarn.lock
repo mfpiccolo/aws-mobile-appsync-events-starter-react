@@ -3551,6 +3551,11 @@ ignore@^3.3.3, ignore@^3.3.6:
   version "3.3.8"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.8.tgz#3f8e9c35d38708a3a7e0e9abb6c73e7ee7707b2b"
 
+immer@^1.9.2:
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-1.9.2.tgz#2b26f53be03baf00622005bccbc37c063d619408"
+  integrity sha512-AmTGHRa7IRer/MTyQqTBn3FkhuE6FWkH5qTzBd4mbtI6EVSuVSgx2lv8q8pW0jgZ7+RMTIHAmCaWR/tEVIQGaQ==
+
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
@@ -4855,6 +4860,7 @@ no-case@^2.2.0:
 node-fetch@^1.0.1:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
+  integrity sha512-NhZ4CsKx7cYm2vSrBAr2PvFOe6sWDf0UYLRqA6svUYg7+/TSfVAu49jYC4BvQ4Sms9SZgdqGBgroqfDhJdTyKQ==
   dependencies:
     encoding "^0.1.11"
     is-stream "^1.0.1"

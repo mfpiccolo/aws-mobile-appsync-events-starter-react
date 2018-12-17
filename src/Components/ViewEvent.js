@@ -1,13 +1,29 @@
-import React from "react";
-import { graphql } from "react-apollo";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import moment from "moment";
 
-import QueryGetEvent from "../GraphQL/QueryGetEvent";
 import EventComments from "./EventComments";
 
-function ViewEvent({ event, loading }) {
+import { StoreContext } from "../StoreContext";
+import { fetchEvent } from "../actions/events";
+
+function ViewEvent({
+  match: {
+    params: { id }
+  },
+  loading
+}) {
+  const { state, dispatch } = useContext(StoreContext);
+  const {
+    events: { data: events }
+  } = state;
+  const event = events.find(e => e.id === id);
+
+  useEffect(() => {
+    fetchEvent(dispatch, id);
+  }, []);
+
   return (
     <div
       className={`ui container raised very padded segment ${
@@ -36,7 +52,10 @@ function ViewEvent({ event, loading }) {
               </div>
               <div className="description">{event.description}</div>
               <div className="extra">
-                <EventComments eventId={event.id} comments={event.comments} />
+                <EventComments
+                  eventId={event.id}
+                  comments={event.comments.items}
+                />
               </div>
             </div>
           )}
@@ -46,19 +65,4 @@ function ViewEvent({ event, loading }) {
   );
 }
 
-const ViewEventWithData = graphql(QueryGetEvent, {
-  options: ({
-    match: {
-      params: { id }
-    }
-  }) => ({
-    variables: { id },
-    fetchPolicy: "cache-and-network"
-  }),
-  props: ({ data: { getEvent: event, loading } }) => ({
-    event,
-    loading
-  })
-})(ViewEvent);
-
-export default ViewEventWithData;
+export default ViewEvent;

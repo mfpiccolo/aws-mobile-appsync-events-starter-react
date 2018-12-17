@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
-
-export default gql(`
+export const getEventsQuery = `
 query {
   listEvents(limit: 1000) {
     items {
@@ -16,4 +14,4 @@ query {
       }
     }
   }
-}`);
+}`;

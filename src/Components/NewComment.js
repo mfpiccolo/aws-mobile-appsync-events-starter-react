@@ -1,28 +1,25 @@
-import React, { useState } from "react";
-import { graphql } from "react-apollo";
-import { v4 as uuid } from "uuid";
-
-import MutationCommentOnEvent from "../GraphQL/MutationCommentOnEvent";
-import QueryGetEvent from "../GraphQL/QueryGetEvent";
+import React, { useState, useContext } from "react";
 import moment from "moment";
 
-function NewComment({ eventId, createComment }) {
+import { StoreContext } from "../StoreContext";
+import { createComment } from "../actions/events";
+
+function NewComment({ eventId }) {
+  let { state, dispatch } = useContext(StoreContext);
   const [comment, setComment] = useState({ content: "" });
-  const [loading, setLoading] = useState(false);
+  const {
+    events: { loading }
+  } = state;
 
   const handleSubmit = async e => {
     e.stopPropagation();
     e.preventDefault();
 
-    setLoading(true);
-
-    await createComment({
+    createComment(dispatch, eventId, {
       ...comment,
       eventId,
       createdAt: moment.utc().format()
     });
-
-    setLoading(false);
 
     setComment({ content: "" });
   };
@@ -54,43 +51,4 @@ function NewComment({ eventId, createComment }) {
   );
 }
 
-const NewCommentWithData = graphql(MutationCommentOnEvent, {
-  options: props => ({
-    update: (proxy, { data: { commentOnEvent } }) => {
-      const query = QueryGetEvent;
-      const variables = { id: commentOnEvent.eventId };
-      const data = proxy.readQuery({ query, variables });
-
-      data.getEvent = {
-        ...data.getEvent,
-        comments: {
-          ...data.getEvent.comments,
-          items: [
-            ...data.getEvent.comments.items.filter(
-              c => c.commentId !== commentOnEvent.commentId
-            ),
-            commentOnEvent
-          ]
-        }
-      };
-
-      proxy.writeQuery({ query, data });
-    }
-  }),
-  props: props => ({
-    createComment: comment => {
-      return props.mutate({
-        variables: { ...comment },
-        optimisticResponse: {
-          commentOnEvent: {
-            ...comment,
-            __typename: "Comment",
-            commentId: uuid()
-          }
-        }
-      });
-    }
-  })
-})(NewComment);
-
-export default NewCommentWithData;
+export default NewComment;

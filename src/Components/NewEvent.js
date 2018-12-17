@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-
-import { v4 as uuid } from "uuid";
-import { graphql } from "react-apollo";
-import QueryAllEvents from "../GraphQL/QueryAllEvents";
-import QueryGetEvent from "../GraphQL/QueryGetEvent";
-import MutationCreateEvent from "../GraphQL/MutationCreateEvent";
 
 import DatePicker from "react-datepicker";
 import moment from "moment";
 
+import { StoreContext } from "../StoreContext";
+import { createEvent } from "../actions/events";
+
 import { nearest15min } from "../Utils";
 import DateTimePickerCustomInput from "./DateTimePickerCustomInput";
 
-function NewEvent({ createEvent, history }) {
+function NewEvent({ history }) {
+  let { state, dispatch } = useContext(StoreContext);
   const [event, setEvent] = useState({
     name: "",
     when: nearest15min().format(),
@@ -33,8 +31,7 @@ function NewEvent({ createEvent, history }) {
   const handleSave = async e => {
     e.stopPropagation();
     e.preventDefault();
-    await createEvent({ ...event });
-    history.push("/");
+    createEvent(dispatch, { ...event }, history);
   };
 
   return (
@@ -101,39 +98,4 @@ function NewEvent({ createEvent, history }) {
   );
 }
 
-export default graphql(MutationCreateEvent, {
-  props: props => ({
-    createEvent: event => {
-      return props.mutate({
-        update: (proxy, { data: { createEvent } }) => {
-          // Update QueryAllEvents
-          const query = QueryAllEvents;
-          const data = proxy.readQuery({ query });
-
-          data.listEvents.items = [
-            ...data.listEvents.items.filter(e => e.id !== createEvent.id),
-            createEvent
-          ];
-
-          proxy.writeQuery({ query, data });
-
-          // Create cache entry for QueryGetEvent
-          const query2 = QueryGetEvent;
-          const variables = { id: createEvent.id };
-          const data2 = { getEvent: { ...createEvent } };
-
-          proxy.writeQuery({ query: query2, variables, data: data2 });
-        },
-        variables: event,
-        optimisticResponse: () => ({
-          createEvent: {
-            ...event,
-            id: uuid(),
-            __typename: "Event",
-            comments: { __typename: "CommentConnection", items: [] }
-          }
-        })
-      });
-    }
-  })
-})(NewEvent);
+export default NewEvent;

@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
-
-export default gql(`
+export const getEventQuery = `
 query($id: ID!) {
   getEvent(id: $id) {
     id
@@ -17,4 +15,4 @@ query($id: ID!) {
       }
     }
   }
-}`);
+}`;

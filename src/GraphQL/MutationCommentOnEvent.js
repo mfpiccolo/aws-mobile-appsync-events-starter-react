@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
-
-export default gql(`
+export const commentOnEventQuery = `
 mutation MutationCommentOnEvent($eventId: ID! $content: String! $createdAt: String!) {
   commentOnEvent(
     eventId: $eventId
@@ -12,4 +10,4 @@ mutation MutationCommentOnEvent($eventId: ID! $content: String! $createdAt: Stri
     content
     createdAt
   }
-}`);
+}`;
