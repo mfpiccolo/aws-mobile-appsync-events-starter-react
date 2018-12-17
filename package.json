@@ -5,6 +5,7 @@
   "dependencies": {
     "aws-appsync": "^1.2.1",
     "aws-appsync-react": "^1.0.21",
+    "combine-reducers": "^1.0.0",
     "immer": "^1.9.2",
     "moment": "^2.19.2",
     "react": "16.7.0-alpha.2",
