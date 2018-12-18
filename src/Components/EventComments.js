@@ -1,20 +1,21 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 
 import NewComment from "./NewComment";
 import Comment from "./Comment";
 
-function EventComments({ comments = [], eventId }) {
-  // const [subscription, setSubscription] = useState();
+import { StoreContext } from "../StoreContext";
+import { subscribeToComments } from "../actions/events";
 
-  // // Todo: figure out the subscription
-  // useEffect(
-  //   () => {
-  //     setSubscription(subscribeToComments());
-  //   },
-  //   () => {
-  //     subscription();
-  //   }
-  // );
+function EventComments({ comments = [], eventId }) {
+  let { state, dispatch } = useContext(StoreContext);
+
+  // Todo: figure out the subscription
+  useEffect(() => {
+    const subscription = subscribeToComments(dispatch, eventId);
+    return () => {
+      subscription.then(client => client.end());
+    };
+  }, []);
 
   return (
     <div className="ui items">

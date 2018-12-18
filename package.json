@@ -8,6 +8,7 @@
     "combine-reducers": "^1.0.0",
     "immer": "^1.9.2",
     "moment": "^2.19.2",
+    "mqtt": "^2.18.8",
     "react": "16.7.0-alpha.2",
     "react-apollo": "^2.0.1",
     "react-datepicker": "^0.61.0",

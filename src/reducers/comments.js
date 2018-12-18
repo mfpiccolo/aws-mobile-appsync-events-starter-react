@@ -17,6 +17,9 @@ export default (state = initialState, action) => {
       case "CREATE_COMMENT_FAILURE":
         draft.loading = false;
         break;
+      case "SUBSCRIBE_COMMENT_SUCCESS":
+        draft.data.push(action.payload.comment);
+        break;
       default:
         return state;
     }
